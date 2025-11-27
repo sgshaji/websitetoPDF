@@ -35,8 +35,8 @@ parser.add_argument(
     "-L",
     "--level",
     type=int,
-    help="Max depth of the crawl (0 = root page only)",
-    default=0,
+    help="Max depth of the crawl (omit for unlimited depth)",
+    default=None,
 )
 args = parser.parse_args()
 
@@ -47,13 +47,14 @@ async def crawl_and_save_pdf(
     visited_hashes,
     browser,
     base_url,
+    base_domain,
     depth,
     max_depth,
     exclude_texts,
     pdf_info,
 ):
     normalized_url = normalize_url(url)
-    if normalized_url in visited or depth > max_depth:
+    if normalized_url in visited or (max_depth is not None and depth > max_depth):
         return
     visited.add(normalized_url)
 
@@ -122,17 +123,14 @@ async def crawl_and_save_pdf(
 
             # Check if the next URL is valid and belongs to the base domain
             parsed_next_url = urlparse(normalized_next_url)
-            parsed_base_url = urlparse(base_url)
-            if (
-                parsed_next_url.netloc == parsed_base_url.netloc
-                and normalized_next_url not in visited
-            ):
+            if parsed_next_url.netloc == base_domain and normalized_next_url not in visited:
                 await crawl_and_save_pdf(
                     next_url,
                     visited,
                     visited_hashes,
                     browser,
                     base_url,
+                    base_domain,
                     depth + 1,
                     max_depth,
                     exclude_texts,
@@ -268,12 +266,15 @@ async def main(root_url, exclude_texts, max_depth):
         visited = set()
         visited_hashes = set()
         pdf_info = []  # To store information about each crawled page
+        normalized_base_url = normalize_url(root_url)
+        base_domain = urlparse(normalized_base_url).netloc
         await crawl_and_save_pdf(
             root_url,
             visited,
             visited_hashes,
             browser,
             root_url,
+            base_domain,
             0,
             max_depth,
             exclude_texts,
