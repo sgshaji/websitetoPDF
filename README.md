@@ -8,7 +8,7 @@ This Python script automates the process of crawling websites, saving individual
 - Converts each page to a PDF
 - Combines all PDFs into a single document
 - Generates a clickable table of contents
-- Allows setting crawl depth and excluding specific links
+- Allows setting crawl depth (or crawling the entire site) and excluding specific links
 - Handles relative and absolute URLs
 - Avoids duplicate content
 
@@ -35,7 +35,7 @@ This Python script automates the process of crawling websites, saving individual
 Run the script from the command line with the following syntax:
 
 ```
-python web_to_pdf_crawler.py <root_url> [options]
+python main.py <root_url> [options]
 ```
 
 ### Arguments
@@ -45,19 +45,19 @@ python web_to_pdf_crawler.py <root_url> [options]
 ### Options
 
 - `-e` or `--exclude`: Specify link texts to exclude from crawling (can be used multiple times)
-- `-L` or `--level`: Set the maximum depth of the crawl (default is 0, which crawls only the root page)
+- `-L` or `--level`: Set the maximum depth of the crawl (omit for unlimited depth to collect every reachable page on the domain)
 
 ### Examples
 
-1. Basic usage (crawl only the root page):
-   ```
-   python web_to_pdf_crawler.py https://example.com
-   ```
+1. Basic usage (crawl the entire site):
+    ```
+    python main.py https://example.com
+    ```
 
 2. Crawl to a depth of 2, excluding certain pages:
-   ```
-   python web_to_pdf_crawler.py https://example.com -L 2 -e "Privacy Policy" "Terms of Service"
-   ```
+    ```
+    python main.py https://example.com -L 2 -e "Privacy Policy" "Terms of Service"
+    ```
 
 ## Output
 
